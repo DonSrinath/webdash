@@ -1,0 +1,225 @@
+name: Build & Publish WebDash
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+# Prevent concurrent runs on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── JOB 1: Debug build on every push (fast feedback) ───────────────────────
+  build-debug:
+    name: Build Debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+        working-directory: WebDash-Android
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --no-daemon
+        working-directory: WebDash-Android
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: webdash-debug-${{ github.sha }}
+          path: WebDash-Android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+
+  # ── JOB 2: Signed release — runs on tag OR manual trigger ──────────────────
+  build-release:
+    name: Build Signed Release (AAB + APK)
+    runs-on: ubuntu-latest
+    # Only run on version tags or manual dispatch (not on every PR)
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      # Decode the base64 keystore stored in GitHub Secrets → write to disk
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
+        working-directory: WebDash-Android
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+        working-directory: WebDash-Android
+
+      # Build signed AAB — this is what Play Store requires
+      - name: Build signed AAB (Play Store)
+        run: ./gradlew bundleRelease --no-daemon
+        working-directory: WebDash-Android
+        env:
+          SIGNING_KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          SIGNING_STORE_FILE:     keystore.jks
+
+      # Build signed APK — for sideloading / direct distribution
+      - name: Build signed APK
+        run: ./gradlew assembleRelease --no-daemon
+        working-directory: WebDash-Android
+        env:
+          SIGNING_KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          SIGNING_STORE_FILE:     keystore.jks
+
+      # Wipe keystore from disk immediately after build
+      - name: Remove keystore
+        if: always()
+        run: rm -f keystore.jks
+        working-directory: WebDash-Android
+
+      - name: Upload signed AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: webdash-release-aab-${{ github.sha }}
+          path: WebDash-Android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - name: Upload signed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: webdash-release-apk-${{ github.sha }}
+          path: WebDash-Android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 30
+
+  # ── JOB 3: GitHub Release + Play Store upload on version tag ───────────────
+  publish:
+    name: Publish to GitHub Releases & Play Store
+    runs-on: ubuntu-latest
+    needs: build-release
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
+        working-directory: WebDash-Android
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+        working-directory: WebDash-Android
+
+      - name: Build signed AAB
+        run: ./gradlew bundleRelease --no-daemon
+        working-directory: WebDash-Android
+        env:
+          SIGNING_KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          SIGNING_STORE_FILE:     keystore.jks
+
+      - name: Build signed APK
+        run: ./gradlew assembleRelease --no-daemon
+        working-directory: WebDash-Android
+        env:
+          SIGNING_KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          SIGNING_STORE_FILE:     keystore.jks
+
+      - name: Remove keystore
+        if: always()
+        run: rm -f keystore.jks
+        working-directory: WebDash-Android
+
+      # Create GitHub Release with both AAB and APK attached
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: WebDash ${{ github.ref_name }}
+          files: |
+            WebDash-Android/app/build/outputs/bundle/release/app-release.aab
+            WebDash-Android/app/build/outputs/apk/release/app-release.apk
+          body: |
+            ## WebDash ${{ github.ref_name }}
+
+            | File | Use for |
+            |------|---------|
+            | `app-release.aab` | Upload to Google Play Console |
+            | `app-release.apk` | Direct install / sideload via adb |
+
+            ### Sideload
+            ```bash
+            adb install app-release.apk
+            ```
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Upload AAB directly to Play Store internal track
+      # Requires PLAY_SERVICE_ACCOUNT_JSON secret (see README)
+      - name: Upload AAB to Play Store (internal track)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.webdash.app
+          releaseFiles: WebDash-Android/app/build/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed
+          whatsNewDirectory: distribution/whatsnew
