@@ -1,0 +1,4 @@
+#Sun Mar 15 23:11:23 SGT 2026
+base.0=/Users/srinath/claude-code-workspace/WebDash-Android/app/build/intermediates/dex/debugAndroidTest/mergeProjectDexDebugAndroidTest/0/classes.dex
+path.0=0/classes.dex
+renamed.0=classes.dex

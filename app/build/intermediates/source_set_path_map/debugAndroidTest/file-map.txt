@@ -1,0 +1,4 @@
+com.webdash.app.test.app-androidTest-0 /Users/srinath/claude-code-workspace/WebDash-Android/app/build/generated/res/resValues/androidTest/debug
+com.webdash.app.test.app-mergeDebugAndroidTestResources-1 /Users/srinath/claude-code-workspace/WebDash-Android/app/build/intermediates/incremental/debugAndroidTest/mergeDebugAndroidTestResources/merged.dir
+com.webdash.app.test.app-mergeDebugAndroidTestResources-2 /Users/srinath/claude-code-workspace/WebDash-Android/app/build/intermediates/incremental/debugAndroidTest/mergeDebugAndroidTestResources/stripped.dir
+com.webdash.app.test.app-merged_res-3 /Users/srinath/claude-code-workspace/WebDash-Android/app/build/intermediates/merged_res/debugAndroidTest
