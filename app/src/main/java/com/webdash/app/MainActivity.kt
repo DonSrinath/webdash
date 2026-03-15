@@ -19,8 +19,19 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Full immersive mode
-        makeFullscreen()
+        // Apply fullscreen via theme flags BEFORE setContentView
+        // WindowInsetsController is not available until window is attached,
+        // so we use the legacy flag approach here — makeFullscreen() is
+        // called again in onWindowFocusChanged() once window is fully ready.
+        @Suppress("DEPRECATION")
+        window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            or View.SYSTEM_UI_FLAG_FULLSCREEN
+            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        )
 
         // Root layout
         val root = FrameLayout(this)
@@ -42,13 +53,20 @@ class MainActivity : Activity() {
         webView.loadUrl("file:///android_asset/index.html")
     }
 
+    // Called once the window is fully attached and focused —
+    // safe to use WindowInsetsController here
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) makeFullscreen()
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun configureWebView() {
         val settings = webView.settings
 
         // JavaScript
         settings.javaScriptEnabled = true
-        settings.domStorageEnabled = true          // localStorage support
+        settings.domStorageEnabled = true
         settings.databaseEnabled = true
 
         // Performance
@@ -107,7 +125,6 @@ class MainActivity : Activity() {
             override fun shouldOverrideUrlLoading(
                 view: WebView, request: WebResourceRequest
             ): Boolean {
-                // Allow all navigation inside the WebView
                 return false
             }
 
@@ -116,32 +133,28 @@ class MainActivity : Activity() {
                 request: WebResourceRequest,
                 error: WebResourceError
             ) {
-                // Silently handle errors — the web app handles its own UI states
+                // Silently handle — web app manages its own error UI
             }
         }
     }
 
     // TV remote / back button
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        // Let the web app's own JS handle back/escape via keyboard events
-        // Only intercept if WebView can't go back (i.e. at root)
         if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
             if (webView.canGoBack()) {
                 webView.goBack()
                 return true
             }
-            // At root of our SPA — let JS handle via keydown event
             val js = "document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));"
             webView.evaluateJavascript(js, null)
             return true
         }
 
-        // D-pad navigation — dispatch as arrow key events to the web app
         val arrowKey = when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_UP    -> "ArrowUp"
-            KeyEvent.KEYCODE_DPAD_DOWN  -> "ArrowDown"
-            KeyEvent.KEYCODE_DPAD_LEFT  -> "ArrowLeft"
-            KeyEvent.KEYCODE_DPAD_RIGHT -> "ArrowRight"
+            KeyEvent.KEYCODE_DPAD_UP     -> "ArrowUp"
+            KeyEvent.KEYCODE_DPAD_DOWN   -> "ArrowDown"
+            KeyEvent.KEYCODE_DPAD_LEFT   -> "ArrowLeft"
+            KeyEvent.KEYCODE_DPAD_RIGHT  -> "ArrowRight"
             KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> "Enter"
             else -> null
         }
@@ -159,12 +172,14 @@ class MainActivity : Activity() {
 
     private fun makeFullscreen() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // API 30+ — use WindowInsetsController (safe here, window is attached)
             window.insetsController?.let {
                 it.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
                 it.systemBarsBehavior =
                     WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } else {
+            // API 21-29 — legacy flags
             @Suppress("DEPRECATION")
             window.decorView.systemUiVisibility = (
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -179,7 +194,6 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        makeFullscreen()
         webView.onResume()
     }
 
