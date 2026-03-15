@@ -40,11 +40,11 @@ jobs:
 
       - name: Make gradlew executable
         run: chmod +x gradlew
-        working-directory: WebDash-Android
+
 
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
-        working-directory: WebDash-Android
+
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
@@ -84,16 +84,16 @@ jobs:
       - name: Decode keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
-        working-directory: WebDash-Android
+
 
       - name: Make gradlew executable
         run: chmod +x gradlew
-        working-directory: WebDash-Android
+
 
       # Build signed AAB — this is what Play Store requires
       - name: Build signed AAB (Play Store)
         run: ./gradlew bundleRelease --no-daemon
-        working-directory: WebDash-Android
+
         env:
           SIGNING_KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
           SIGNING_KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
@@ -103,7 +103,7 @@ jobs:
       # Build signed APK — for sideloading / direct distribution
       - name: Build signed APK
         run: ./gradlew assembleRelease --no-daemon
-        working-directory: WebDash-Android
+
         env:
           SIGNING_KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
           SIGNING_KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
@@ -114,7 +114,7 @@ jobs:
       - name: Remove keystore
         if: always()
         run: rm -f keystore.jks
-        working-directory: WebDash-Android
+
 
       - name: Upload signed AAB
         uses: actions/upload-artifact@v4
@@ -160,15 +160,15 @@ jobs:
       - name: Decode keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
-        working-directory: WebDash-Android
+
 
       - name: Make gradlew executable
         run: chmod +x gradlew
-        working-directory: WebDash-Android
+
 
       - name: Build signed AAB
         run: ./gradlew bundleRelease --no-daemon
-        working-directory: WebDash-Android
+
         env:
           SIGNING_KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
           SIGNING_KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
@@ -177,7 +177,7 @@ jobs:
 
       - name: Build signed APK
         run: ./gradlew assembleRelease --no-daemon
-        working-directory: WebDash-Android
+
         env:
           SIGNING_KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
           SIGNING_KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
@@ -187,7 +187,7 @@ jobs:
       - name: Remove keystore
         if: always()
         run: rm -f keystore.jks
-        working-directory: WebDash-Android
+
 
       # Create GitHub Release with both AAB and APK attached
       - name: Create GitHub Release
