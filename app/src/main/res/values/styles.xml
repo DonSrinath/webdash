@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Full-screen, no action bar, dark background -->
-    <style name="AppTheme" parent="android:Theme.Material.NoTitleBar.Fullscreen">
+    <style name="AppTheme" parent="android:Theme.Black.NoTitleBar.Fullscreen">
         <item name="android:windowBackground">#0A0A0F</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowOverscan">true</item>
-        <!-- TV: no focus highlight (handled by web app) -->
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowTranslucentNavigation">false</item>
     </style>
 </resources>
