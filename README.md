@@ -105,3 +105,16 @@ export SIGNING_KEY_ALIAS=webdash
 export SIGNING_KEY_PASSWORD=yourkeypassword
 ./gradlew bundleRelease assembleRelease
 ```
+
+install via ADB over WiFi  
+First make sure you have adb installed
+```bash
+adb version
+#if not there install it
+brew install android-platform-tools
+```
+
+```bash
+adb connect <tv-ip>:5555
+adb install app-debug.apk
+```
