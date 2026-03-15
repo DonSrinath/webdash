@@ -235,7 +235,30 @@
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   /* ── TV D-PAD FOCUS ────────────────────── */
-  @media (hover: none) { .tile:focus { box-shadow: 0 0 0 3px var(--accent); } }
+  /* Always-visible focus ring for TV remote navigation */
+  :focus-visible {
+    outline: 2px solid var(--accent) !important;
+    outline-offset: 2px !important;
+  }
+  .tile:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 3px var(--accent), 0 8px 32px rgba(79,110,247,0.2) !important;
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    background: var(--surface2);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--accent) !important;
+    outline-offset: 3px !important;
+    background: var(--surface2) !important;
+    color: var(--text) !important;
+  }
+  input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent) !important;
+    outline-offset: 2px !important;
+    border-color: var(--accent) !important;
+  }
+  .site-row:focus-within { background: var(--surface2); }
 
   /* scrollbar */
   ::-webkit-scrollbar { width: 6px; }
@@ -632,6 +655,8 @@ document.getElementById('btn-settings').addEventListener('click', () => {
   localStorage.removeItem(ACTIVE_KEY);
   renderSettings();
   show('settings');
+  // Auto-focus Back button so TV remote works immediately
+  setTimeout(() => document.getElementById('btn-back').focus(), 50);
 });
 
 document.getElementById('btn-back').addEventListener('click', () => {
@@ -640,18 +665,44 @@ document.getElementById('btn-back').addEventListener('click', () => {
 });
 
 document.getElementById('btn-exit').addEventListener('click', () => {
+  // Android WebView bridge — closes the app natively
+  if (window.AndroidBridge && window.AndroidBridge.exitApp) {
+    window.AndroidBridge.exitApp();
+    return;
+  }
+  // Fallback for regular browsers
   window.close();
-  history.go(-(history.length - 1));
+  // Last resort — navigate to blank
+  setTimeout(() => { window.location.href = 'about:blank'; }, 100);
 });
 
 // ── EXPORT / IMPORT ────────────────────────────────────
 document.getElementById('btn-export').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(cfg, null, 2)], {type: 'application/json'});
-  const a    = document.createElement('a');
-  a.href     = URL.createObjectURL(blob);
-  a.download = 'webdash-config.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
+  const json = JSON.stringify(cfg, null, 2);
+
+  // Android WebView bridge export — passes JSON to Kotlin to save via native file dialog
+  if (window.AndroidBridge && window.AndroidBridge.exportConfig) {
+    window.AndroidBridge.exportConfig(json);
+    return;
+  }
+
+  // Browser fallback — download via blob URL
+  try {
+    const blob = new Blob([json], {type: 'application/json'});
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = 'webdash-config.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    toast('Config exported');
+  } catch(err) {
+    // Last resort — show JSON in a new tab so user can copy/save manually
+    const w = window.open('', '_blank');
+    if (w) { w.document.write('<pre>' + json + '</pre>'); w.document.title = 'webdash-config.json'; }
+    else { prompt('Copy this config and save as webdash-config.json:', json); }
+  }
 });
 
 document.getElementById('btn-import').addEventListener('change', e => {
@@ -666,12 +717,44 @@ document.getElementById('btn-import').addEventListener('change', e => {
       toast('Config imported');
     } catch(err) { toast('Invalid config file'); }
   };
+  reader.onerror = () => toast('Could not read file');
   reader.readAsText(file);
   e.target.value = '';
 });
 
+// Called by Android bridge after user picks a save location
+window.onExportDone = function(success) {
+  toast(success ? 'Config exported' : 'Export failed');
+};
+
+// Called by Android bridge to import config JSON string directly
+window.onImportConfig = function(json) {
+  try {
+    cfg = Object.assign(defaultConfig(), JSON.parse(json));
+    saveConfig(cfg);
+    renderSettings();
+    toast('Config imported');
+  } catch(err) { toast('Invalid config file'); }
+};
+
 // ── KEYBOARD NAV (TV D-PAD) ────────────────────────────
+
+// All focusable elements in the settings screen
+function getSettingsFocusable() {
+  return [...document.querySelectorAll(
+    '#screen-settings button, #screen-settings input, #screen-settings select'
+  )].filter(el => !el.disabled && el.offsetParent !== null);
+}
+
+// Auto-focus first element when entering settings
+function focusFirstSetting() {
+  const els = getSettingsFocusable();
+  if (els.length) els[0].focus();
+}
+
 document.addEventListener('keydown', e => {
+
+  // ── TILES SCREEN ──────────────────────
   if (screens.tiles.classList.contains('active')) {
     const tiles   = [...document.querySelectorAll('.tile')];
     const focused = document.activeElement;
@@ -679,10 +762,53 @@ document.addEventListener('keydown', e => {
     const grid    = document.getElementById('tiles-grid');
     const cols    = Math.round(grid.offsetWidth / ((tiles[0]?.offsetWidth || 260) + 18));
 
+    // If nothing focused yet, focus first tile on any arrow key
+    if (idx === -1 && tiles.length && ['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(e.key)) {
+      e.preventDefault(); tiles[0].focus(); return;
+    }
+
     if (e.key === 'ArrowRight' && idx >= 0 && idx < tiles.length - 1) { e.preventDefault(); tiles[idx+1].focus(); }
     if (e.key === 'ArrowLeft'  && idx > 0)                             { e.preventDefault(); tiles[idx-1].focus(); }
     if (e.key === 'ArrowDown'  && idx + cols < tiles.length)           { e.preventDefault(); tiles[idx+cols].focus(); }
     if (e.key === 'ArrowUp'    && idx - cols >= 0)                     { e.preventDefault(); tiles[idx-cols].focus(); }
+    if (e.key === 'ArrowUp'    && idx - cols < 0)                      { e.preventDefault(); document.getElementById('btn-settings').focus(); }
+  }
+
+  // ── SETTINGS SCREEN ───────────────────
+  if (screens.settings.classList.contains('active')) {
+    const els     = getSettingsFocusable();
+    const focused = document.activeElement;
+    const idx     = els.indexOf(focused);
+
+    // Skip text inputs for up/down nav — let them type normally
+    const isTextInput = focused && (focused.type === 'text' || focused.type === 'url' || focused.type === 'number');
+
+    if (e.key === 'ArrowDown' && !isTextInput) {
+      e.preventDefault();
+      const next = els[idx + 1] || els[0];
+      next.focus();
+      next.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
+    if (e.key === 'ArrowUp' && !isTextInput) {
+      e.preventDefault();
+      const prev = els[idx - 1] || els[els.length - 1];
+      prev.focus();
+      prev.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
+    // Enter / OK button activates focused element
+    if (e.key === 'Enter' && focused) {
+      if (focused.tagName === 'BUTTON') { e.preventDefault(); focused.click(); }
+      if (focused.type === 'checkbox')  { e.preventDefault(); focused.checked = !focused.checked; focused.dispatchEvent(new Event('change')); }
+      if (focused.type === 'radio')     { e.preventDefault(); focused.checked = true; focused.dispatchEvent(new Event('change')); }
+    }
+
+    // Back / Escape goes back to tile view
+    if (e.key === 'Escape' || e.key === 'Back' || e.key === 'BrowserBack') {
+      e.preventDefault();
+      document.getElementById('btn-back').click();
+    }
   }
 });
 

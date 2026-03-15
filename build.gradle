@@ -1,4 +1,78 @@
 plugins {
-    id 'com.android.application' version '8.2.0' apply false
-    id 'org.jetbrains.kotlin.android' version '1.9.22' apply false
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.webdash.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.webdash.app"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    // Reads signing credentials from env vars injected by GitHub Actions.
+    // Falls back gracefully if not set — local debug builds work with no setup.
+    signingConfigs {
+        release {
+            def envStoreFile     = System.getenv("SIGNING_STORE_FILE")
+            def envStorePassword = System.getenv("SIGNING_STORE_PASSWORD")
+            def envKeyAlias      = System.getenv("SIGNING_KEY_ALIAS")
+            def envKeyPassword   = System.getenv("SIGNING_KEY_PASSWORD")
+
+            if (envStoreFile && envStorePassword && envKeyAlias && envKeyPassword) {
+                storeFile     file(envStoreFile)
+                storePassword envStorePassword
+                keyAlias      envKeyAlias
+                keyPassword   envKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            // Only apply signing when env vars are present (CI)
+            if (System.getenv("SIGNING_STORE_FILE")) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    // AAB split config — required for Play Store
+    bundle {
+        language { enableSplit = true }
+        density  { enableSplit = true }
+        abi      { enableSplit = true }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        viewBinding false
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.activity:activity-ktx:1.8.2'
 }
