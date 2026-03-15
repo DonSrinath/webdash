@@ -39,17 +39,6 @@
   .screen { display: none; width: 100%; height: 100%; }
   .screen.active { display: flex; }
 
-  /* ── IFRAME SCREEN ─────────────────────── */
-  #screen-iframe {
-    position: fixed; inset: 0; z-index: 100;
-    background: #000;
-    flex-direction: column;
-  }
-  #site-frame {
-    flex: 1; width: 100%; border: none;
-    background: #000;
-  }
-
   /* ── TILES SCREEN ──────────────────────── */
   #screen-tiles {
     flex-direction: column;
@@ -77,34 +66,25 @@
 
   .tiles-logo {
     font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    font-size: 13px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
     color: var(--text-dim);
   }
   .tiles-logo span { color: var(--accent); }
-
   .tiles-actions { display: flex; gap: 10px; }
 
   .tiles-grid-wrap {
     position: relative; z-index: 1;
-    flex: 1;
-    padding: 0 64px 64px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    flex: 1; padding: 0 64px 64px;
+    display: flex; align-items: flex-start; justify-content: center;
   }
 
   .tiles-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 18px;
-    width: 100%;
-    max-width: 1400px;
+    gap: 18px; width: 100%; max-width: 1400px;
   }
 
-  /* TV: bigger tiles */
   @media (min-width: 1280px) {
     .tiles-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
     .tiles-header { padding: 56px 80px 36px; }
@@ -112,244 +92,109 @@
   }
 
   .tile {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 32px 24px 28px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition), background var(--transition);
-    position: relative;
-    outline: none;
-    text-align: center;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px 24px 28px;
+    cursor: pointer; display: flex; flex-direction: column;
+    align-items: center; gap: 14px;
+    transition: transform var(--transition), border-color var(--transition),
+                box-shadow var(--transition), background var(--transition);
+    position: relative; outline: none; text-align: center;
+    user-select: none; -webkit-tap-highlight-color: transparent;
   }
   .tile:hover, .tile:focus {
-    transform: translateY(-3px);
-    border-color: var(--accent);
+    transform: translateY(-3px); border-color: var(--accent);
     background: var(--surface2);
     box-shadow: 0 8px 32px rgba(79,110,247,0.15), 0 0 0 1px rgba(79,110,247,0.2);
   }
   .tile:active { transform: translateY(0); }
 
   .tile.default-tile::after {
-    content: 'DEFAULT';
-    position: absolute; top: 10px; right: 10px;
-    font-family: 'DM Mono', monospace;
-    font-size: 9px; font-weight: 500;
-    letter-spacing: 0.1em;
-    color: var(--accent);
-    background: rgba(79,110,247,0.12);
-    border: 1px solid rgba(79,110,247,0.25);
-    border-radius: 4px;
-    padding: 2px 6px;
+    content: 'DEFAULT'; position: absolute; top: 10px; right: 10px;
+    font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+    letter-spacing: 0.1em; color: var(--accent);
+    background: rgba(79,110,247,0.12); border: 1px solid rgba(79,110,247,0.25);
+    border-radius: 4px; padding: 2px 6px;
   }
 
   .tile-icon {
-    width: 56px; height: 56px;
-    border-radius: 12px;
-    background: var(--surface2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 26px;
-    border: 1px solid var(--border);
-    flex-shrink: 0;
-    transition: background var(--transition);
-    overflow: hidden;
+    width: 56px; height: 56px; border-radius: 12px;
+    background: var(--surface2); display: flex; align-items: center;
+    justify-content: center; font-size: 26px;
+    border: 1px solid var(--border); flex-shrink: 0;
+    transition: background var(--transition); overflow: hidden;
   }
-  .tile-icon img {
-    width: 32px; height: 32px;
-    object-fit: contain;
-  }
+  .tile-icon img { width: 32px; height: 32px; object-fit: contain; }
   .tile:hover .tile-icon, .tile:focus .tile-icon {
-    background: rgba(79,110,247,0.1);
-    border-color: rgba(79,110,247,0.3);
+    background: rgba(79,110,247,0.1); border-color: rgba(79,110,247,0.3);
   }
-
-  .tile-name {
-    font-size: 15px; font-weight: 500;
-    color: var(--text);
-    line-height: 1.3;
-    word-break: break-word;
-  }
-
-  .tile-url {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--text-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-  }
-
-  .tile-reload {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: var(--text-muted);
-    display: flex; align-items: center; gap: 4px;
-  }
+  .tile-name { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.3; word-break: break-word; }
+  .tile-url { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .tile-reload { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
   .tile-reload svg { opacity: 0.5; }
 
   /* ── SETTINGS SCREEN ───────────────────── */
-  #screen-settings {
-    flex-direction: column;
-    background: var(--bg);
-    overflow-y: auto;
-  }
+  #screen-settings { flex-direction: column; background: var(--bg); overflow-y: auto; }
 
   .settings-wrap {
-    flex: 1;
-    padding: 48px 64px;
-    max-width: 860px;
-    margin: 0 auto;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
+    flex: 1; padding: 48px 64px; max-width: 860px;
+    margin: 0 auto; width: 100%;
+    display: flex; flex-direction: column; gap: 32px;
   }
 
-  .settings-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
+  .settings-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 
-  .settings-title {
-    font-size: 24px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-  }
-  .settings-title small {
-    display: block;
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--text-dim);
-    margin-top: 3px;
-    letter-spacing: 0;
-  }
+  .settings-title { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
+  .settings-title small { display: block; font-size: 13px; font-weight: 400; color: var(--text-dim); margin-top: 3px; letter-spacing: 0; }
 
-  .section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .section-head { padding: 18px 22px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .section-label { font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); font-family: 'DM Mono', monospace; }
 
-  .section-head {
-    padding: 18px 22px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .section-label {
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    font-family: 'DM Mono', monospace;
-  }
-
-  /* Global reload setting */
-  .global-row {
-    padding: 18px 22px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
+  .global-row { padding: 18px 22px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
   .global-row label { font-size: 14px; color: var(--text-dim); flex-shrink: 0; }
 
-  /* Site list */
   #site-list { display: flex; flex-direction: column; }
 
   .site-row {
     padding: 14px 22px;
     display: grid;
     grid-template-columns: 28px 1fr 1fr 90px 90px 36px;
-    align-items: center;
-    gap: 10px;
+    align-items: center; gap: 10px;
     border-bottom: 1px solid var(--border);
     transition: background var(--transition);
   }
   .site-row:last-child { border-bottom: none; }
   .site-row:hover { background: var(--surface2); }
-
-  .site-row .drag-handle {
-    color: var(--text-muted);
-    cursor: grab;
-    font-size: 16px;
-    text-align: center;
-    line-height: 1;
-    padding: 4px 0;
-  }
-  .site-row .drag-handle:active { cursor: grabbing; }
-
+  .site-row .drag-handle { color: var(--text-muted); cursor: grab; font-size: 16px; text-align: center; line-height: 1; padding: 4px 0; }
   .site-row.default-row { background: rgba(79,110,247,0.04); }
   .site-row.default-row:hover { background: rgba(79,110,247,0.08); }
 
-  /* empty state */
-  .empty-state {
-    padding: 48px 22px;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 14px;
-  }
+  .empty-state { padding: 48px 22px; text-align: center; color: var(--text-muted); font-size: 14px; }
 
   /* ── INPUTS ────────────────────────────── */
   input[type="text"], input[type="url"], input[type="number"], select {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    padding: 8px 12px;
-    outline: none;
-    transition: border-color var(--transition);
-    width: 100%;
-    appearance: none;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    padding: 8px 12px; outline: none;
+    transition: border-color var(--transition); width: 100%; appearance: none;
   }
-  input[type="text"]:focus, input[type="url"]:focus, input[type="number"]:focus, select:focus {
-    border-color: var(--accent);
-  }
+  input[type="text"]:focus, input[type="url"]:focus, input[type="number"]:focus, select:focus { border-color: var(--accent); }
   select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237070a0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; }
   input[type="number"] { width: 80px; text-align: center; }
   input::placeholder { color: var(--text-muted); }
-
-  input[type="checkbox"] {
-    width: 16px; height: 16px;
-    accent-color: var(--accent);
-    cursor: pointer;
-    flex-shrink: 0;
-  }
+  input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
 
   /* ── BUTTONS ───────────────────────────── */
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 500;
-    border-radius: 8px;
-    padding: 9px 18px;
-    cursor: pointer;
-    border: none;
-    outline: none;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    border-radius: 8px; padding: 9px 18px; cursor: pointer; border: none; outline: none;
     transition: opacity var(--transition), transform var(--transition), background var(--transition);
-    white-space: nowrap;
-    flex-shrink: 0;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap; flex-shrink: 0; user-select: none; -webkit-tap-highlight-color: transparent;
   }
   .btn:active { transform: scale(0.97); }
   .btn:disabled { opacity: 0.4; cursor: default; }
-
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-primary:hover { opacity: 0.88; }
   .btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
@@ -359,57 +204,38 @@
   .btn-icon { background: transparent; color: var(--text-dim); border: 1px solid var(--border); padding: 9px 12px; }
   .btn-icon:hover { background: var(--surface2); color: var(--text); }
 
-  /* Add site row */
   .add-row {
     padding: 14px 22px;
-    display: grid;
-    grid-template-columns: 1fr 1fr auto auto;
-    gap: 10px;
-    align-items: center;
-    background: var(--surface2);
-    border-top: 1px solid var(--border);
+    display: grid; grid-template-columns: 1fr 1fr auto auto;
+    gap: 10px; align-items: center;
+    background: var(--surface2); border-top: 1px solid var(--border);
   }
 
-  /* Radio-style default selector */
-  .default-radio {
-    display: flex; align-items: center; justify-content: center;
+  .default-radio { display: flex; align-items: center; justify-content: center; }
+  .default-radio input[type="radio"] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+
+  /* ── RELOAD PROGRESS BAR ───────────────── */
+  .reload-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 2px;
+    background: rgba(79,110,247,0.15); z-index: 200; display: none;
   }
-  .default-radio input[type="radio"] {
-    width: 15px; height: 15px;
-    accent-color: var(--accent);
-    cursor: pointer;
-    flex-shrink: 0;
-  }
+  .reload-bar-fill { height: 100%; background: var(--accent); transition: width 1s linear; }
 
   /* ── TOAST ─────────────────────────────── */
   #toast {
-    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(16px);
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(16px);
     background: var(--surface2); border: 1px solid var(--border);
     border-radius: 10px; padding: 11px 20px;
-    font-size: 13px; color: var(--text);
-    z-index: 9999;
+    font-size: 13px; color: var(--text); z-index: 9999;
     opacity: 0; pointer-events: none;
     transition: opacity 220ms ease, transform 220ms ease;
-    white-space: nowrap;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ── TV D-PAD FOCUS RING ───────────────── */
-  @media (hover: none) {
-    .tile:focus { box-shadow: 0 0 0 3px var(--accent); }
-  }
-
-  /* ── RELOAD COUNTDOWN ──────────────────── */
-  .reload-bar {
-    position: fixed; bottom: 0; left: 0; right: 0; height: 2px;
-    background: rgba(79,110,247,0.15); z-index: 200;
-    display: none;
-  }
-  .reload-bar-fill {
-    height: 100%; background: var(--accent);
-    transition: width 1s linear;
-  }
+  /* ── TV D-PAD FOCUS ────────────────────── */
+  @media (hover: none) { .tile:focus { box-shadow: 0 0 0 3px var(--accent); } }
 
   /* scrollbar */
   ::-webkit-scrollbar { width: 6px; }
@@ -438,12 +264,6 @@
   </div>
 </div>
 
-<!-- ── IFRAME SCREEN ─────────────────────────────────── -->
-<div id="screen-iframe" class="screen">
-  <iframe id="site-frame" title="Site Viewer" allowfullscreen></iframe>
-  <div class="reload-bar" id="reload-bar"><div class="reload-bar-fill" id="reload-bar-fill"></div></div>
-</div>
-
 <!-- ── SETTINGS SCREEN ───────────────────────────────── -->
 <div id="screen-settings" class="screen">
   <div class="settings-wrap">
@@ -452,10 +272,16 @@
         Settings
         <small>Configure sites and behaviour</small>
       </div>
-      <button class="btn btn-ghost" id="btn-back">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        Back
-      </button>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" id="btn-back">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Back
+        </button>
+        <button class="btn btn-danger" id="btn-exit" style="padding:9px 18px;border:1px solid rgba(239,68,68,0.3);font-size:13px;font-weight:500;width:auto;height:auto;border-radius:8px;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Exit
+        </button>
+      </div>
     </div>
 
     <!-- Global options -->
@@ -476,10 +302,7 @@
         <span class="section-label">Sites</span>
         <span style="font-size:12px;color:var(--text-muted)">Set one as default to skip tile view</span>
       </div>
-
       <div id="site-list"></div>
-
-      <!-- Add row -->
       <div class="add-row">
         <input type="text" id="new-name" placeholder="Label" autocomplete="off" spellcheck="false">
         <input type="url" id="new-url" placeholder="https://example.com" autocomplete="off" spellcheck="false">
@@ -509,6 +332,9 @@
   </div>
 </div>
 
+<!-- ── RELOAD BAR (shown during direct navigation) ───── -->
+<div class="reload-bar" id="reload-bar"><div class="reload-bar-fill" id="reload-bar-fill"></div></div>
+
 <!-- ── TOAST ─────────────────────────────────────────── -->
 <div id="toast"></div>
 
@@ -517,15 +343,12 @@
 'use strict';
 
 // ── STATE ──────────────────────────────────────────────
-const STORAGE_KEY = 'webdash_v1';
+const STORAGE_KEY   = 'webdash_v1';
+const ACTIVE_KEY    = 'webdash_active_site'; // persists across navigation
+const RETURNING_KEY = 'webdash_returning';   // flag: we're coming back from a site
 
 function defaultConfig() {
-  return {
-    globalReloadMin: 5,
-    globalReloadEnabled: true,
-    defaultSiteId: null,
-    sites: []
-  };
+  return { globalReloadMin: 5, globalReloadEnabled: true, defaultSiteId: null, sites: [] };
 }
 
 function loadConfig() {
@@ -536,23 +359,18 @@ function loadConfig() {
   return defaultConfig();
 }
 
-function saveConfig(cfg) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
-}
+function saveConfig(c) { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); }
 
 let cfg = loadConfig();
 
 // ── SCREEN ROUTER ──────────────────────────────────────
 const screens = {
-  tiles: document.getElementById('screen-tiles'),
-  iframe: document.getElementById('screen-iframe'),
+  tiles:    document.getElementById('screen-tiles'),
   settings: document.getElementById('screen-settings'),
 };
 
 function show(name) {
-  Object.keys(screens).forEach(k => {
-    screens[k].classList.toggle('active', k === name);
-  });
+  Object.keys(screens).forEach(k => screens[k].classList.toggle('active', k === name));
 }
 
 // ── TOAST ──────────────────────────────────────────────
@@ -565,56 +383,73 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
-// ── IFRAME / RELOAD ────────────────────────────────────
+// ── RELOAD BAR ─────────────────────────────────────────
 let reloadTimer = null;
-let reloadCountdown = 0;
-let reloadTotal = 0;
-let reloadTick = null;
-const frame = document.getElementById('site-frame');
-const reloadBar = document.getElementById('reload-bar');
+const reloadBar  = document.getElementById('reload-bar');
 const reloadFill = document.getElementById('reload-bar-fill');
 
-function openSite(site) {
-  clearTimers();
-  frame.src = site.url;
-  show('iframe');
-
-  const mins = site.reloadOverride != null ? site.reloadOverride : cfg.globalReloadMin;
-  const enabled = (site.reloadOverride != null) ? true : cfg.globalReloadEnabled;
-
-  if (enabled && mins > 0) {
-    reloadTotal = mins * 60;
-    reloadCountdown = reloadTotal;
-    reloadBar.style.display = 'block';
-    reloadFill.style.width = '100%';
-    reloadFill.style.transition = 'none';
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        reloadFill.style.transition = `width ${reloadTotal}s linear`;
-        reloadFill.style.width = '0%';
-      });
-    });
-
-    reloadTimer = setInterval(() => {
-      frame.src = frame.src;
-      // reset bar
-      reloadFill.style.transition = 'none';
-      reloadFill.style.width = '100%';
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          reloadFill.style.transition = `width ${reloadTotal}s linear`;
-          reloadFill.style.width = '0%';
-        });
-      });
-    }, reloadTotal * 1000);
-  } else {
-    reloadBar.style.display = 'none';
-  }
+function startReloadBar(totalSeconds) {
+  reloadBar.style.display = 'block';
+  reloadFill.style.transition = 'none';
+  reloadFill.style.width = '100%';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    reloadFill.style.transition = `width ${totalSeconds}s linear`;
+    reloadFill.style.width = '0%';
+  }));
 }
 
 function clearTimers() {
   if (reloadTimer) { clearInterval(reloadTimer); reloadTimer = null; }
+  reloadBar.style.display = 'none';
+}
+
+// ── OPEN SITE — navigate directly, no iframe ───────────
+function openSite(site) {
+  clearTimers();
+
+  const mins    = site.reloadOverride != null ? site.reloadOverride : cfg.globalReloadMin;
+  const enabled = site.reloadOverride != null ? true : cfg.globalReloadEnabled;
+  const secs    = mins * 60;
+
+  // Store which site is active so we can reload it on return
+  localStorage.setItem(ACTIVE_KEY, JSON.stringify({ site, mins, enabled }));
+
+  if (enabled && secs > 0) {
+    // Show progress bar briefly before navigating
+    startReloadBar(3); // cosmetic 3s bar before redirect
+  }
+
+  // Small delay so the bar renders, then navigate
+  setTimeout(() => {
+    window.location.href = site.url;
+  }, 80);
+}
+
+// ── HANDLE RETURN FROM SITE ────────────────────────────
+// When the user navigates back to this page (Android back button / Escape),
+// check if we should auto-reload the last site or show the tile view.
+function handleReturn() {
+  const raw = localStorage.getItem(ACTIVE_KEY);
+  if (!raw) return false;
+
+  try {
+    const { site, mins, enabled } = JSON.parse(raw);
+    if (!site || !site.url) return false;
+
+    if (enabled && mins > 0) {
+      const secs = mins * 60;
+      startReloadBar(secs);
+
+      // Auto-reload: navigate back to the site after interval
+      reloadTimer = setTimeout(() => {
+        window.location.href = site.url;
+      }, secs * 1000);
+    }
+
+    return true; // we handled it — stay on this page showing reload bar
+  } catch(e) {
+    return false;
+  }
 }
 
 // ── TILES ──────────────────────────────────────────────
@@ -634,7 +469,7 @@ function renderTiles() {
     return;
   }
 
-  cfg.sites.forEach((site, i) => {
+  cfg.sites.forEach(site => {
     const isDefault = cfg.defaultSiteId === site.id;
     const tile = document.createElement('div');
     tile.className = 'tile' + (isDefault ? ' default-tile' : '');
@@ -642,14 +477,14 @@ function renderTiles() {
     tile.setAttribute('tabindex', '0');
     tile.setAttribute('aria-label', site.name);
 
-    const favicon = getFavicon(site.url);
-    const iconHTML = favicon
+    const favicon    = getFavicon(site.url);
+    const iconHTML   = favicon
       ? `<img src="${favicon}" alt="" onerror="this.parentNode.textContent='🌐'">`
       : '🌐';
 
-    const mins = site.reloadOverride != null ? site.reloadOverride : cfg.globalReloadMin;
-    const reloadEnabled = (site.reloadOverride != null) ? true : cfg.globalReloadEnabled;
-    const reloadText = reloadEnabled
+    const mins          = site.reloadOverride != null ? site.reloadOverride : cfg.globalReloadMin;
+    const reloadEnabled = site.reloadOverride != null ? true : cfg.globalReloadEnabled;
+    const reloadText    = reloadEnabled
       ? `<span class="tile-reload"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.5 15A9 9 0 1 1 18 6.5"/></svg>${mins}m</span>`
       : '';
 
@@ -664,14 +499,16 @@ function renderTiles() {
     `;
 
     tile.addEventListener('click', () => openSite(site));
-    tile.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSite(site); } });
+    tile.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSite(site); }
+    });
     grid.appendChild(tile);
   });
 }
 
 // ── SETTINGS ───────────────────────────────────────────
 function renderSettings() {
-  document.getElementById('global-reload').value = cfg.globalReloadMin;
+  document.getElementById('global-reload').value   = cfg.globalReloadMin;
   document.getElementById('global-reload-enabled').checked = cfg.globalReloadEnabled;
   renderSiteList();
 }
@@ -684,7 +521,7 @@ function renderSiteList() {
   }
 
   list.innerHTML = '';
-  cfg.sites.forEach((site, i) => {
+  cfg.sites.forEach(site => {
     const row = document.createElement('div');
     row.className = 'site-row' + (cfg.defaultSiteId === site.id ? ' default-row' : '');
     row.dataset.id = site.id;
@@ -695,25 +532,25 @@ function renderSiteList() {
       <input type="url" value="${escHtml(site.url)}" placeholder="https://..." class="site-url-input" data-id="${site.id}">
       <select class="site-reload-select" data-id="${site.id}" title="Reload override">
         <option value="">Global</option>
-        <option value="1" ${site.reloadOverride==1?'selected':''}>1 min</option>
-        <option value="5" ${site.reloadOverride==5?'selected':''}>5 min</option>
+        <option value="1"  ${site.reloadOverride==1 ?'selected':''}>1 min</option>
+        <option value="5"  ${site.reloadOverride==5 ?'selected':''}>5 min</option>
         <option value="10" ${site.reloadOverride==10?'selected':''}>10 min</option>
         <option value="15" ${site.reloadOverride==15?'selected':''}>15 min</option>
         <option value="30" ${site.reloadOverride==30?'selected':''}>30 min</option>
         <option value="60" ${site.reloadOverride==60?'selected':''}>60 min</option>
       </select>
-      <div class="default-radio" title="Set as default (skip tile view)">
-        <input type="radio" name="default-site" value="${site.id}" ${cfg.defaultSiteId===site.id?'checked':''} aria-label="Set ${escHtml(site.name)} as default">
+      <div class="default-radio" title="Set as default">
+        <input type="radio" name="default-site" value="${site.id}"
+          ${cfg.defaultSiteId===site.id?'checked':''}
+          aria-label="Set ${escHtml(site.name)} as default">
       </div>
-      <button class="btn btn-danger" data-id="${site.id}" title="Remove site" aria-label="Remove ${escHtml(site.name)}">
+      <button class="btn btn-danger" data-id="${site.id}" title="Remove" aria-label="Remove ${escHtml(site.name)}">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 6h18M19 6l-1 14H6L5 6M9 6V4h6v2"/></svg>
       </button>
     `;
-
     list.appendChild(row);
   });
 
-  // events
   list.querySelectorAll('.site-name-input').forEach(inp => {
     inp.addEventListener('change', e => {
       const s = cfg.sites.find(x => x.id === e.target.dataset.id);
@@ -754,19 +591,18 @@ function renderSiteList() {
 
 // ── ADD SITE ───────────────────────────────────────────
 document.getElementById('btn-add-site').addEventListener('click', () => {
-  const nameEl = document.getElementById('new-name');
-  const urlEl = document.getElementById('new-url');
+  const nameEl   = document.getElementById('new-name');
+  const urlEl    = document.getElementById('new-url');
   const reloadEl = document.getElementById('new-reload-override');
 
   const name = nameEl.value.trim();
-  let url = urlEl.value.trim();
+  let url    = urlEl.value.trim();
   if (!url) { toast('Please enter a URL'); urlEl.focus(); return; }
   if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
 
   cfg.sites.push({
     id: 'site_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
-    name: name || url,
-    url,
+    name: name || url, url,
     reloadOverride: reloadEl.value !== '' ? parseInt(reloadEl.value) : null
   });
   saveConfig(cfg);
@@ -775,7 +611,6 @@ document.getElementById('btn-add-site').addEventListener('click', () => {
   toast('Site added');
 });
 
-// add on enter
 document.getElementById('new-url').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('btn-add-site').click();
 });
@@ -793,20 +628,27 @@ document.getElementById('global-reload-enabled').addEventListener('change', e =>
 
 // ── NAVIGATION ─────────────────────────────────────────
 document.getElementById('btn-settings').addEventListener('click', () => {
+  clearTimers();
+  localStorage.removeItem(ACTIVE_KEY);
   renderSettings();
   show('settings');
 });
 
 document.getElementById('btn-back').addEventListener('click', () => {
-  cfg = loadConfig(); // refresh
+  cfg = loadConfig();
   route();
+});
+
+document.getElementById('btn-exit').addEventListener('click', () => {
+  window.close();
+  history.go(-(history.length - 1));
 });
 
 // ── EXPORT / IMPORT ────────────────────────────────────
 document.getElementById('btn-export').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(cfg, null, 2)], {type: 'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
   a.download = 'webdash-config.json';
   a.click();
   URL.revokeObjectURL(a.href);
@@ -818,8 +660,7 @@ document.getElementById('btn-import').addEventListener('change', e => {
   const reader = new FileReader();
   reader.onload = evt => {
     try {
-      const imported = JSON.parse(evt.target.result);
-      cfg = Object.assign(defaultConfig(), imported);
+      cfg = Object.assign(defaultConfig(), JSON.parse(evt.target.result));
       saveConfig(cfg);
       renderSettings();
       toast('Config imported');
@@ -831,59 +672,39 @@ document.getElementById('btn-import').addEventListener('change', e => {
 
 // ── KEYBOARD NAV (TV D-PAD) ────────────────────────────
 document.addEventListener('keydown', e => {
-  if (screens.iframe.classList.contains('active')) {
-    if (e.key === 'Escape' || e.key === 'Back' || e.key === 'BrowserBack') {
-      clearTimers();
-      frame.src = 'about:blank';
-      cfg = loadConfig();
-      route();
-    }
-  }
   if (screens.tiles.classList.contains('active')) {
-    const tiles = [...document.querySelectorAll('.tile')];
+    const tiles   = [...document.querySelectorAll('.tile')];
     const focused = document.activeElement;
-    const idx = tiles.indexOf(focused);
+    const idx     = tiles.indexOf(focused);
+    const grid    = document.getElementById('tiles-grid');
+    const cols    = Math.round(grid.offsetWidth / ((tiles[0]?.offsetWidth || 260) + 18));
+
     if (e.key === 'ArrowRight' && idx >= 0 && idx < tiles.length - 1) { e.preventDefault(); tiles[idx+1].focus(); }
-    if (e.key === 'ArrowLeft' && idx > 0) { e.preventDefault(); tiles[idx-1].focus(); }
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      // compute columns from grid
-      const grid = document.getElementById('tiles-grid');
-      const cols = Math.round(grid.offsetWidth / (tiles[0] ? tiles[0].offsetWidth + 18 : 1));
-      if (idx + cols < tiles.length) tiles[idx + cols].focus();
-    }
-    if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      const grid = document.getElementById('tiles-grid');
-      const cols = Math.round(grid.offsetWidth / (tiles[0] ? tiles[0].offsetWidth + 18 : 1));
-      if (idx - cols >= 0) tiles[idx - cols].focus();
-    }
+    if (e.key === 'ArrowLeft'  && idx > 0)                             { e.preventDefault(); tiles[idx-1].focus(); }
+    if (e.key === 'ArrowDown'  && idx + cols < tiles.length)           { e.preventDefault(); tiles[idx+cols].focus(); }
+    if (e.key === 'ArrowUp'    && idx - cols >= 0)                     { e.preventDefault(); tiles[idx-cols].focus(); }
   }
 });
 
 // ── ROUTE ──────────────────────────────────────────────
 function route() {
   clearTimers();
+  localStorage.removeItem(ACTIVE_KEY);
 
   if (!cfg.sites.length) {
-    // No sites → go to settings
     renderSettings();
     show('settings');
     toast('Add your first site to get started');
     return;
   }
 
-  if (cfg.sites.length === 1) {
-    openSite(cfg.sites[0]);
-    return;
-  }
+  if (cfg.sites.length === 1) { openSite(cfg.sites[0]); return; }
 
   if (cfg.defaultSiteId) {
     const def = cfg.sites.find(s => s.id === cfg.defaultSiteId);
     if (def) { openSite(def); return; }
   }
 
-  // Multiple sites, no default → tile view
   renderTiles();
   show('tiles');
 }
@@ -894,7 +715,15 @@ function escHtml(s) {
 }
 
 // ── INIT ───────────────────────────────────────────────
-route();
+// Check if we're returning from a site navigation
+const returning = handleReturn();
+if (!returning) {
+  route();
+} else {
+  // Show tiles in background while reload countdown runs
+  renderTiles();
+  show('tiles');
+}
 
 })();
 </script>
