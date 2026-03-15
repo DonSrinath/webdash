@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: webdash-debug-${{ github.sha }}
-          path: WebDash-Android/app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
 
   # ── JOB 2: Signed release — runs on tag OR manual trigger ──────────────────
@@ -120,14 +120,14 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: webdash-release-aab-${{ github.sha }}
-          path: WebDash-Android/app/build/outputs/bundle/release/app-release.aab
+          path: app/build/outputs/bundle/release/app-release.aab
           retention-days: 30
 
       - name: Upload signed APK
         uses: actions/upload-artifact@v5
         with:
           name: webdash-release-apk-${{ github.sha }}
-          path: WebDash-Android/app/build/outputs/apk/release/app-release.apk
+          path: app/build/outputs/apk/release/app-release.apk
           retention-days: 30
 
   # ── JOB 3: GitHub Release + Play Store upload on version tag ───────────────
@@ -195,8 +195,8 @@ jobs:
         with:
           name: WebDash ${{ github.ref_name }}
           files: |
-            WebDash-Android/app/build/outputs/bundle/release/app-release.aab
-            WebDash-Android/app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/bundle/release/app-release.aab
+            app/build/outputs/apk/release/app-release.apk
           body: |
             ## WebDash ${{ github.ref_name }}
 
@@ -219,7 +219,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.webdash.app
-          releaseFiles: WebDash-Android/app/build/outputs/bundle/release/app-release.aab
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: internal
           status: completed
           whatsNewDirectory: distribution/whatsnew
