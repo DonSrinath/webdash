@@ -714,8 +714,8 @@ document.getElementById('btn-settings').addEventListener('click', () => {
 });
 
 document.getElementById('btn-back').addEventListener('click', () => {
-  cfg = loadConfig();
-  route();
+  renderTiles();
+  show('tiles');
 });
 
 document.getElementById('btn-exit').addEventListener('click', () => {
@@ -837,7 +837,8 @@ function escHtml(s) {
 // ── INIT ───────────────────────────────────────────────
 const returning = handleReturn();
 if (!returning) {
-  route();
+  renderSettings();
+  show('settings');
 } else {
   renderTiles();
   show('tiles');
