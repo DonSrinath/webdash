@@ -40,3 +40,4 @@ gradlew
 gradlew.bat
 gradlew.sh  
 app/release/
+app/build/
